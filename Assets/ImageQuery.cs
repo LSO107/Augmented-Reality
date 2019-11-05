@@ -70,6 +70,12 @@ internal sealed class ImageQuery : MonoBehaviour
         if (www.isHttpError || www.isNetworkError)
         {
             Debug.LogError($"Error while receiving: {www.error}");
+
+            if (API_KEY == "INSERT_API_KEY" || CX == "INSERT_API_CREDENTIALS")
+            {
+                Debug.LogError("API key or credentials required in: ImageQuery.cs");
+                Debug.LogError("Please see README.md for instructions");
+            }
         }
         else
         {
