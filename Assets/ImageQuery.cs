@@ -14,7 +14,7 @@ internal sealed class ImageQuery : MonoBehaviour
     [SerializeField]
     private Text inputFieldText;
     [SerializeField] 
-    private SpawnImages spawnImages;
+    private DisplayHandler displayHandler;
     [SerializeField]
     private InputField searchInputField;
     [SerializeField]
@@ -90,9 +90,10 @@ internal sealed class ImageQuery : MonoBehaviour
                 downloadedImages.Add(request.downloadHandler.data);
             }
 
-            spawnImages.DeleteOldImages();
+            displayHandler.DeleteOldImages();
 
-            spawnImages.DisplayImages(downloadedImages);
+            displayHandler.DisplayImages(downloadedImages);
+            displayHandler.DisplayWikipediaText(text);
 
             downloadedImages.Clear();
 
