@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class SpawnImages : MonoBehaviour
+public class DisplayHandler : MonoBehaviour
 {
     [SerializeField] 
     private GameObject imagePrefab;
+    [SerializeField]
+    private Text wikipediaPrefab;
     [SerializeField] 
     private int picturesPerRow = 5;
     [SerializeField]
@@ -44,6 +47,11 @@ public class SpawnImages : MonoBehaviour
 
             currentColumn++;
         }
+    }
+
+    public void DisplayWikipediaText(string text)
+    {
+        wikipediaPrefab.text = text;
     }
 
     public void DeleteOldImages()
