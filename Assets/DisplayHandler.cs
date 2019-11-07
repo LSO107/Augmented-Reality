@@ -49,11 +49,17 @@ public class DisplayHandler : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets <see cref="Text.text"/> value to string
+    /// </summary>
     public void DisplayWikipediaText(string text)
     {
         wikipediaPrefab.text = text;
     }
 
+    /// <summary>
+    /// Iterates over child objects and deletes them
+    /// </summary>
     public void DeleteOldImages()
     {
         if (transform.childCount > 0)
