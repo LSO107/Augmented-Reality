@@ -47,8 +47,8 @@ internal sealed class ImageQuery : MonoBehaviour
 
         var wikiRequest = UnityWebRequest.Get(wikipediaUrl);
         yield return wikiRequest.SendWebRequest();
+
         var wikiJsonString = wikiRequest.downloadHandler.text;
-        Debug.Log(wikiJsonString);
 
         string text;
 
@@ -61,8 +61,6 @@ internal sealed class ImageQuery : MonoBehaviour
         {
             text = "No Wikipedia entry was found.";
         }
-
-        Debug.Log(text);
 
         var www = UnityWebRequest.Get(url);
         yield return www.SendWebRequest();
@@ -85,7 +83,13 @@ internal sealed class ImageQuery : MonoBehaviour
             foreach (var link in imageLinks)
             {
                 var request = UnityWebRequest.Get(link);
-                yield return request.SendWebRequest();
+                request.SendWebRequest();
+
+                while (!request.isDone)
+                {
+                    displayHandler.UpdateLoadingBar(request);
+                    yield return null;
+                }
 
                 downloadedImages.Add(request.downloadHandler.data);
             }

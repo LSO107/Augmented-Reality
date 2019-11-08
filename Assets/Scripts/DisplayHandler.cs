@@ -1,17 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class DisplayHandler : MonoBehaviour
 {
-    [SerializeField] 
+    [SerializeField]
     private GameObject imagePrefab;
     [SerializeField]
     private Text wikipediaPrefab;
-    [SerializeField] 
+    [SerializeField]
     private int picturesPerRow = 5;
     [SerializeField]
     private float imageOffset = 0.2f;
+    [SerializeField]
+    private Slider LoadingBar;
+
+    private float TotalNum = 0;
 
     public void DisplayImages(List<byte[]> images)
     {
@@ -49,6 +55,13 @@ public class DisplayHandler : MonoBehaviour
         }
     }
 
+    public void UpdateLoadingBar(UnityWebRequest request)
+    {
+        TotalNum += request.downloadProgress;
+        LoadingBar.value = (TotalNum / 15) * 1;
+        Debug.Log(LoadingBar.value);
+    }
+
     /// <summary>
     /// Sets <see cref="Text.text"/> value to string
     /// </summary>
@@ -69,5 +82,8 @@ public class DisplayHandler : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
+
+        TotalNum = 0;
+        LoadingBar.value = 0;
     }
 }
