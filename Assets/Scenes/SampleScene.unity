@@ -802,7 +802,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 1e-45, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 869428.3, y: 1.5226194e+19, z: 1.6794516e-19, w: 3333.2107}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1222,7 +1222,7 @@ MonoBehaviour:
   wikipediaPrefab: {fileID: 535346447}
   picturesPerRow: 5
   imageOffset: 0.2
-  LoadingBar: {fileID: 1454908768}
+  loadingBar: {fileID: 1454908768}
 --- !u!1 &959717937
 GameObject:
   m_ObjectHideFlags: 0
