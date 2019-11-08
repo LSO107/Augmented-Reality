@@ -20,10 +20,12 @@ internal sealed class ImageQuery : MonoBehaviour
     [SerializeField]
     private Button searchButton;
 
+    private string m_WikipediaText;
+
     public List<byte[]> downloadedImages = new List<byte[]>();
 
-    private const string API_KEY = "INSERT_API_KEY";
-    private const string CX = "INSERT_API_CREDENTIALS";
+    private const string API_KEY = "";
+    private const string CX = "";
 
     public void GetPictures()
     {
@@ -43,37 +45,19 @@ internal sealed class ImageQuery : MonoBehaviour
 
         var wikipediaUrl = $"https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles={query}";
 
-        var url = $"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={CX}&q={query}&searchType=image";
+        var googleUrl = $"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={CX}&q={query}&searchType=image";
 
-        var wikiRequest = UnityWebRequest.Get(wikipediaUrl);
-        yield return wikiRequest.SendWebRequest();
+        StartCoroutine(ExtractWikipediaText(wikipediaUrl));
 
-        var wikiJsonString = wikiRequest.downloadHandler.text;
-
-        string text;
-
-        try
-        {
-            var wikiResponse = JsonConvert.DeserializeObject<WikipediaResponseJsonBinding>(wikiJsonString);
-            text = wikiResponse.Query.Pages.Select(s => s.Value.Extract).First();
-        }
-        catch (JsonSerializationException e)
-        {
-            text = "No Wikipedia entry was found.";
-        }
-
-        var www = UnityWebRequest.Get(url);
+        var www = UnityWebRequest.Get(googleUrl);
         yield return www.SendWebRequest();
 
         if (www.isHttpError || www.isNetworkError)
         {
             Debug.LogError($"Error while receiving: {www.error}");
 
-            if (API_KEY == "INSERT_API_KEY" || CX == "INSERT_API_CREDENTIALS")
-            {
-                Debug.LogError("API key or credentials required in: ImageQuery.cs");
-                Debug.LogError("Please see README.md for instructions");
-            }
+            if (string.IsNullOrEmpty(API_KEY) || string.IsNullOrEmpty(CX))
+                Debug.Log("Insert API_KEY and API_CREDENTIALS. See README.md for details.");
         }
         else
         {
@@ -83,26 +67,42 @@ internal sealed class ImageQuery : MonoBehaviour
             foreach (var link in imageLinks)
             {
                 var request = UnityWebRequest.Get(link);
-                request.SendWebRequest();
-
-                while (!request.isDone)
-                {
-                    displayHandler.UpdateLoadingBar(request);
-                    yield return null;
-                }
+                yield return request.SendWebRequest();
 
                 downloadedImages.Add(request.downloadHandler.data);
+                displayHandler.UpdateLoadingBar(request);
             }
 
             displayHandler.DeleteOldImages();
 
             displayHandler.DisplayImages(downloadedImages);
-            displayHandler.DisplayWikipediaText(text);
+            displayHandler.DisplayWikipediaText(m_WikipediaText);
 
             downloadedImages.Clear();
 
             searchInputField.interactable = true;
             searchButton.interactable = true;
+        }
+    }
+
+    /// <summary>
+    /// Makes a request to Wikipedia API then sets response to <see cref="m_WikipediaText"/>
+    /// </summary>
+    private IEnumerator ExtractWikipediaText(string wikipediaUrl)
+    {
+        var wikiRequest = UnityWebRequest.Get(wikipediaUrl);
+        yield return wikiRequest.SendWebRequest();
+
+        var wikiJsonString = wikiRequest.downloadHandler.text;
+
+        try
+        {
+            var wikiResponse = JsonConvert.DeserializeObject<WikipediaResponseJsonBinding>(wikiJsonString);
+            m_WikipediaText = wikiResponse.Query.Pages.Select(s => s.Value.Extract).First();
+        }
+        catch (JsonSerializationException e)
+        {
+            m_WikipediaText = "No Wikipedia entry was found.";
         }
     }
 

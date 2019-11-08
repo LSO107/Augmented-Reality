@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -15,10 +14,15 @@ public class DisplayHandler : MonoBehaviour
     [SerializeField]
     private float imageOffset = 0.2f;
     [SerializeField]
-    private Slider LoadingBar;
+    private Slider loadingBar;
 
-    private float TotalNum = 0;
+    private const int NumberOfImages = 10;
+    private float m_TotalDownloadProgress;
 
+    /// <summary>
+    /// Instantiates image prefabs, sets positions and rotation relative to camera.
+    /// Sets the texture from the byte array
+    /// </summary>
     public void DisplayImages(List<byte[]> images)
     {
         var currentRow = 0;
@@ -55,11 +59,15 @@ public class DisplayHandler : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Download progress of all the images converted to
+    /// a value between 0 and 1 for the slider
+    /// </summary>
     public void UpdateLoadingBar(UnityWebRequest request)
     {
-        TotalNum += request.downloadProgress;
-        LoadingBar.value = (TotalNum / 15) * 1;
-        Debug.Log(LoadingBar.value);
+        m_TotalDownloadProgress += request.downloadProgress;
+        loadingBar.value = (m_TotalDownloadProgress / NumberOfImages) * 1;
+        Debug.Log(loadingBar.value);
     }
 
     /// <summary>
@@ -83,7 +91,7 @@ public class DisplayHandler : MonoBehaviour
             }
         }
 
-        TotalNum = 0;
-        LoadingBar.value = 0;
+        m_TotalDownloadProgress = 0;
+        loadingBar.value = 0;
     }
 }
