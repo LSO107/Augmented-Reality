@@ -13,7 +13,7 @@ internal sealed class ImageQuery : MonoBehaviour
     private string query;
     [SerializeField]
     private Text inputFieldText;
-    [SerializeField] 
+    [SerializeField]
     private DisplayHandler displayHandler;
     [SerializeField]
     private InputField searchInputField;
@@ -38,8 +38,7 @@ internal sealed class ImageQuery : MonoBehaviour
     /// </summary>
     private IEnumerator DownloadImage()
     {
-        searchInputField.interactable = false;
-        searchButton.interactable = false;
+        ToggleSelectable(searchInputField, searchButton);
 
         query = inputFieldText.text;
 
@@ -80,8 +79,7 @@ internal sealed class ImageQuery : MonoBehaviour
 
             downloadedImages.Clear();
 
-            searchInputField.interactable = true;
-            searchButton.interactable = true;
+            ToggleSelectable(searchInputField, searchButton);
         }
     }
 
@@ -110,12 +108,27 @@ internal sealed class ImageQuery : MonoBehaviour
     /// Extracts image links from Json string
     /// and returns them as an IEnumerable
     /// </summary>
-    private static IEnumerable<string> ExtractImageLinks(string jsonString)
+    private IEnumerable<string> ExtractImageLinks(string jsonString)
     {
-        Debug.Log(jsonString);
+        try
+        {
+            var results = JsonConvert.DeserializeObject<ImageResultsJsonBinding>(jsonString);
+            return results.Items.Select(s => s.Link);
 
-        var results = JsonConvert.DeserializeObject<ImageResultsJsonBinding>(jsonString);
+        }
+        catch (JsonSerializationException e)
+        {
+            ToggleSelectable(searchInputField, searchButton);
+            throw new JsonSerializationException("Word must be entered");
+        }
+    }
 
-        return results.Items.Select(s => s.Link);
+    /// <summary>
+    /// Toggle interactable feature on input field and button
+    /// </summary>
+    private static void ToggleSelectable(Selectable inputField, Selectable button)
+    {
+        inputField.interactable = !inputField.interactable;
+        button.interactable = !button.interactable;
     }
 }
