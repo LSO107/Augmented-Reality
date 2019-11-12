@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class DisplayHandler : MonoBehaviour
+internal sealed class DisplayHandler : MonoBehaviour
 {
     [SerializeField]
     private GameObject imagePrefab;
@@ -31,7 +31,7 @@ public class DisplayHandler : MonoBehaviour
         var center = cam.transform.position;
         var camRight = cam.transform.right;
         var camForward = cam.transform.forward;
-        Debug.Log(camRight);
+
         var start = center + camForward - Vector3.Scale(camRight, new Vector3(0.3f, 0, 0.3f));
 
         foreach (var image in images)
@@ -67,7 +67,6 @@ public class DisplayHandler : MonoBehaviour
     {
         m_TotalDownloadProgress += request.downloadProgress;
         loadingBar.value = (m_TotalDownloadProgress / NumberOfImages) * 1;
-        Debug.Log(loadingBar.value);
     }
 
     /// <summary>

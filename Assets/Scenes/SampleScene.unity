@@ -686,8 +686,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5189451}
   m_AnchorMax: {x: 1, y: 0.8399104}
-  m_AnchoredPosition: {x: -11.600098, y: -1041.3789}
-  m_SizeDelta: {x: -55.6, y: 2224.8}
+  m_AnchoredPosition: {x: -11.600098, y: -679.979}
+  m_SizeDelta: {x: -55.6, y: 1502}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &535346447
 MonoBehaviour:
@@ -802,7 +802,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: -4.7076496e+32}
+  m_BoundingSphereOverride: {x: 3.788e-42, y: 6e-44, z: 0, w: -1.0429258e+30}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1089,7 +1089,7 @@ MonoBehaviour:
         m_MethodName: PositionContentAtMidAirAnchor
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgument: {fileID: 817752708}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -1571,8 +1571,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 709281751}
   m_HandleRect: {fileID: 709281750}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.18740916
+  m_Value: 1.0000001
+  m_Size: 0.26978576
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
