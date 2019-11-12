@@ -41,8 +41,18 @@ internal sealed class TouchControl : MonoBehaviour
         gameObject.transform.localScale = Vector3.Lerp(transform.localScale, newScale, 3.5F * Time.deltaTime);
     }
 
+    private void DoubleTap()
+    {
+        //var googleUrl = $"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={CX}&q={query}";
+    }
+
     private void OnMouseDown()
     {
+        if (Input.GetTouch(0).tapCount == 2)
+        {
+            Debug.Log("JUST DOUBLE TAPPED !!");
+        }
+
         var position = transform.position;
         screenPoint = MainCamera.WorldToScreenPoint(position);
 
