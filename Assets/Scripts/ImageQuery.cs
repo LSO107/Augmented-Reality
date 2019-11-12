@@ -24,8 +24,8 @@ internal sealed class ImageQuery : MonoBehaviour
 
     public List<byte[]> downloadedImages = new List<byte[]>();
 
-    private const string API_KEY = "";
-    private const string CX = "";
+    private const string API_KEY = "AIzaSyA4ob3WDeH-lSCOnAHZSv5l4iaUV1m0a74";
+    private const string CX = "017045492535372880336:jde0kbzewsh";
 
     public void GetPictures()
     {
@@ -91,16 +91,23 @@ internal sealed class ImageQuery : MonoBehaviour
         var wikiRequest = UnityWebRequest.Get(wikipediaUrl);
         yield return wikiRequest.SendWebRequest();
 
-        var wikiJsonString = wikiRequest.downloadHandler.text;
-
-        try
+        if (wikiRequest.isHttpError || wikiRequest.isNetworkError)
         {
-            var wikiResponse = JsonConvert.DeserializeObject<WikipediaResponseJsonBinding>(wikiJsonString);
-            m_WikipediaText = wikiResponse.Query.Pages.Select(s => s.Value.Extract).First();
+            Debug.Log($"Error while receiving {wikiRequest.error}");
         }
-        catch (JsonSerializationException e)
+        else
         {
-            m_WikipediaText = "No Wikipedia entry was found.";
+            var wikiJsonString = wikiRequest.downloadHandler.text;
+
+            try
+            {
+                var wikiResponse = JsonConvert.DeserializeObject<WikipediaResponseJsonBinding>(wikiJsonString);
+                m_WikipediaText = wikiResponse.Query.Pages.Select(s => s.Value.Extract).First();
+            }
+            catch (JsonSerializationException e)
+            {
+                m_WikipediaText = "No Wikipedia entry was found.";
+            }
         }
     }
 
