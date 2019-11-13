@@ -13,7 +13,6 @@ namespace Bindings
     {
         [JsonProperty(Required = Required.Always)]
         public Dictionary<string, ResultExtractJsonBinding> Pages;
-
     }
 
     public class ResultExtractJsonBinding
