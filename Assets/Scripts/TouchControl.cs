@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 internal sealed class TouchControl : MonoBehaviour
 {
@@ -43,13 +44,13 @@ internal sealed class TouchControl : MonoBehaviour
 
     private void DoubleTap()
     {
-        //var googleUrl = $"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={CX}&q={query}";
     }
 
     private void OnMouseDown()
     {
         if (Input.GetTouch(0).tapCount == 2)
         {
+            DoubleTap();
             Debug.Log("JUST DOUBLE TAPPED !!");
         }
 
