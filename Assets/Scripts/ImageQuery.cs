@@ -24,8 +24,8 @@ internal sealed class ImageQuery : MonoBehaviour
 
     public List<byte[]> downloadedImages = new List<byte[]>();
 
-    private const string API_KEY = "";
-    private const string CX = "";
+    private const string API_KEY = "AIzaSyA4ob3WDeH-lSCOnAHZSv5l4iaUV1m0a74";
+    private const string CX = "017045492535372880336:jde0kbzewsh";
 
     public void GetPictures()
     {
@@ -60,8 +60,20 @@ internal sealed class ImageQuery : MonoBehaviour
         }
         else
         {
-            var jsonString = www.downloadHandler.text;
-            var imageLinks = ExtractImageLinks(jsonString);
+            IEnumerable<string> imageLinks;
+            IEnumerable<string> imageContextLinks;
+
+            try
+            {
+                var results = JsonConvert.DeserializeObject<ImageResultsJsonBinding>(www.downloadHandler.text);
+                imageLinks = results.Items.Select(s => s.Link);
+                imageContextLinks = results.Items.Select(s => s.Image.ContextLink);
+            }
+            catch (JsonSerializationException e)
+            {
+                ToggleSelectable(searchInputField, searchButton);
+                throw new JsonSerializationException("Word must be entered");
+            }
 
             foreach (var link in imageLinks)
             {
@@ -73,10 +85,9 @@ internal sealed class ImageQuery : MonoBehaviour
             }
 
             displayHandler.DeleteOldImages();
-            displayHandler.DisplayImages(downloadedImages);
+            displayHandler.DisplayImages(downloadedImages, imageContextLinks);
             displayHandler.DisplayWikipediaText(m_WikipediaText);
             downloadedImages.Clear();
-
             ToggleSelectable(searchInputField, searchButton);
         }
     }
