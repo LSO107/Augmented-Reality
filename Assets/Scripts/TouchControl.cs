@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 internal sealed class TouchControl : MonoBehaviour
 {
@@ -9,6 +8,8 @@ internal sealed class TouchControl : MonoBehaviour
     private Vector3 offset;
 
     private bool resetTouch;
+
+    private string contextLink;
 
     private void Awake()
     {
@@ -21,6 +22,11 @@ internal sealed class TouchControl : MonoBehaviour
         {
             resetTouch = true;
         }
+    }
+
+    public void StoreContextLinks(string link)
+    {
+        contextLink = link;
     }
 
     private void PinchScale()
@@ -44,6 +50,8 @@ internal sealed class TouchControl : MonoBehaviour
 
     private void DoubleTap()
     {
+        Application.OpenURL(contextLink);
+        Debug.Log(contextLink);
     }
 
     private void OnMouseDown()

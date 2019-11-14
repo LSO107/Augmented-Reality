@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -23,7 +24,7 @@ internal sealed class DisplayHandler : MonoBehaviour
     /// Instantiates image prefabs, sets positions and rotation relative to camera.
     /// Sets the texture from the byte array
     /// </summary>
-    public void DisplayImages(List<byte[]> images)
+    public void DisplayImages(List<byte[]> images, IEnumerable<string> imageContextLinks)
     {
         var currentRow = 0;
         var currentColumn = 0;
@@ -34,10 +35,10 @@ internal sealed class DisplayHandler : MonoBehaviour
 
         var start = center + camForward - Vector3.Scale(camRight, new Vector3(0.3f, 0, 0.3f));
 
-        foreach (var image in images)
+        for (var i = 0; i < images.Count; i++)
         {
             var texture = new Texture2D(1, 1);
-            texture.LoadImage(image);
+            texture.LoadImage(images[i]);
 
             if (currentColumn % picturesPerRow == 0)
             {
@@ -54,7 +55,7 @@ internal sealed class DisplayHandler : MonoBehaviour
             img.transform.Rotate(Vector3.up, 180);
 
             img.GetComponent<Renderer>().material.mainTexture = texture;
-
+            img.GetComponent<TouchControl>().StoreContextLinks(imageContextLinks.ToList()[i]);
             currentColumn++;
         }
     }
