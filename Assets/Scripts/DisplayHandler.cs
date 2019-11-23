@@ -88,8 +88,8 @@ internal sealed class DisplayHandler : MonoBehaviour
     /// </summary>
     public void SetWikipediaText(string text)
     {
-        var loc = GetSpawnPosition();
-        m_WikipediaText = Instantiate(wikipediaPrefab, new Vector3(loc.x, loc.y, loc.z + 500f), Quaternion.identity, transform);
+        var pos = GetSpawnPosition();
+        m_WikipediaText = Instantiate(wikipediaPrefab, new Vector3(0, 0, pos.z), Quaternion.identity, transform);
         m_WikipediaText.GetComponentInChildren<Text>().text = text;
     }
 
