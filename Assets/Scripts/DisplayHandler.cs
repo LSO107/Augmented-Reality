@@ -9,7 +9,7 @@ internal sealed class DisplayHandler : MonoBehaviour
     [SerializeField]
     private GameObject imagePrefab;
     [SerializeField]
-    private Text wikipediaPrefab;
+    private GameObject wikipediaPrefab;
     [SerializeField]
     private int picturesPerRow = 5;
     [SerializeField]
@@ -17,17 +17,48 @@ internal sealed class DisplayHandler : MonoBehaviour
     [SerializeField]
     private Slider loadingBar;
 
-    private const int NumberOfImages = 10;
+    private GameObject m_WikipediaText;
     private float m_TotalDownloadProgress;
+
+    private const int NumberOfImages = 10;
+
+    private int m_CurrentRow;
+    private int m_CurrentColumn;
 
     /// <summary>
     /// Instantiates image prefabs, sets positions and rotation relative to camera.
     /// Sets the texture from the byte array
     /// </summary>
-    public void DisplayImages(List<byte[]> images, IEnumerable<string> imageContextLinks)
+    public void SetImages(List<byte[]> images, IEnumerable<string> imageContextLinks)
     {
-        var currentRow = 0;
-        var currentColumn = 0;
+        for (var i = 0; i < images.Count; i++)
+        {
+            var texture = new Texture2D(1, 1);
+            texture.LoadImage(images[i]);
+
+            if (m_CurrentColumn % picturesPerRow == 0)
+            {
+                m_CurrentColumn = 0;
+                m_CurrentRow++;
+            }
+
+            var pos = GetSpawnPosition();
+
+            var img = Instantiate(imagePrefab, pos, Quaternion.identity, transform);
+            img.transform.LookAt(Camera.main.transform.position);
+            img.transform.Rotate(Vector3.up, 180);
+
+            img.GetComponent<Renderer>().material.mainTexture = texture;
+            img.GetComponent<TouchControl>().StoreContextLinks(imageContextLinks.ToList()[i]);
+            m_CurrentColumn++;
+        }
+    }
+
+    /// <summary>
+    /// Gets the location to spawn relative to the camera
+    /// </summary>
+    private Vector3 GetSpawnPosition()
+    {
         var cam = Camera.main;
         var center = cam.transform.position;
         var camRight = cam.transform.right;
@@ -35,29 +66,11 @@ internal sealed class DisplayHandler : MonoBehaviour
 
         var start = center + camForward - Vector3.Scale(camRight, new Vector3(0.3f, 0, 0.3f));
 
-        for (var i = 0; i < images.Count; i++)
-        {
-            var texture = new Texture2D(1, 1);
-            texture.LoadImage(images[i]);
+        var x = start.x + (imageOffset * camRight.x) * m_CurrentColumn;
+        var y = start.y + imageOffset * m_CurrentRow;
+        var z = start.z + (imageOffset * camRight.z) * m_CurrentColumn;
 
-            if (currentColumn % picturesPerRow == 0)
-            {
-                currentColumn = 0;
-                currentRow++;
-            }
-
-            var x = start.x + (imageOffset * camRight.x) * currentColumn;
-            var y = start.y + imageOffset * currentRow;
-            var z = start.z + (imageOffset * camRight.z) * currentColumn;
-
-            var img = Instantiate(imagePrefab, new Vector3(x, y, z), Quaternion.identity, transform);
-            img.transform.LookAt(center);
-            img.transform.Rotate(Vector3.up, 180);
-
-            img.GetComponent<Renderer>().material.mainTexture = texture;
-            img.GetComponent<TouchControl>().StoreContextLinks(imageContextLinks.ToList()[i]);
-            currentColumn++;
-        }
+        return new Vector3(x, y, z);
     }
 
     /// <summary>
@@ -73,15 +86,17 @@ internal sealed class DisplayHandler : MonoBehaviour
     /// <summary>
     /// Sets <see cref="Text.text"/> value to string
     /// </summary>
-    public void DisplayWikipediaText(string text)
+    public void SetWikipediaText(string text)
     {
-        wikipediaPrefab.text = text;
+        var pos = GetSpawnPosition();
+        m_WikipediaText = Instantiate(wikipediaPrefab, new Vector3(0, 0, pos.z), Quaternion.identity, transform);
+        m_WikipediaText.GetComponentInChildren<Text>().text = text;
     }
 
     /// <summary>
     /// Iterates over child objects and deletes them
     /// </summary>
-    public void DeleteOldImages()
+    public void DeleteSearchResults()
     {
         if (transform.childCount > 0)
         {
@@ -93,5 +108,7 @@ internal sealed class DisplayHandler : MonoBehaviour
 
         m_TotalDownloadProgress = 0;
         loadingBar.value = 0;
+        m_CurrentColumn = 0;
+        m_CurrentRow = 0;
     }
 }
