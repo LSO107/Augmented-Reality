@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -43,12 +44,29 @@ internal sealed class DisplayHandler : MonoBehaviour
             }
 
             var pos = CalculateImageGridPosition(column, row);
-
             var img = Instantiate(imagePrefab, pos, Quaternion.identity, transform);
+            StartCoroutine(ScaleImageOverTime(img));
+
+            img.transform.LookAt(Camera.main.transform.position);
+            img.transform.Rotate(Vector3.up, 180);
 
             img.GetComponent<Renderer>().material.mainTexture = texture;
             img.GetComponent<TouchControl>().StoreContextLinks(imageContextLinks.ToList()[i]);
             column++;
+        }
+    }
+
+    /// <summary>
+    /// Increase the scale of <see cref="GameObject"/> using <see cref="Vector3.Lerp"/>  
+    /// </summary>
+    private static IEnumerator ScaleImageOverTime(GameObject image)
+    {
+        var targetScale = new Vector3(0.11f, 0.11f, 1);
+
+        while (image.transform.localScale.x < 0.1f)
+        {
+            image.transform.localScale = Vector3.Lerp(image.transform.localScale, targetScale, Time.deltaTime * 2.5f);
+            yield return null;
         }
     }
 
@@ -65,17 +83,20 @@ internal sealed class DisplayHandler : MonoBehaviour
         var start = center + camForward - Vector3.Scale(camRight, new Vector3(0.3f, 0, 0.3f));
 
         var x = start.x + (imageOffset * camRight.x) * column;
-        var y = start.y + imageOffset * row + 10;
+        var y = start.y + imageOffset * row;
         var z = start.z + (imageOffset * camRight.z) * column;
 
         return new Vector3(x, y, z);
     }
 
-    private Vector3 CalculateWikiTextPosition()
+    /// <summary>
+    /// Get position to spawn Wikipedia text relative to <see cref="Camera"/>
+    /// </summary>
+    /// <returns></returns>
+    private static Vector3 CalculateWikiTextPosition()
     {
         var cam = Camera.main.transform;
         var center = cam.position;
-        var camRight = cam.right;
         var camForward = cam.forward;
 
         var start = center + camForward;

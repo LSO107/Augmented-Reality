@@ -44,7 +44,7 @@ internal sealed class ImageQuery : MonoBehaviour
 
         var wikipediaUrl = $"https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles={query}";
 
-        var googleUrl = $"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={CX}&q={query}&searchType=image";
+        var googleUrl = $"https://www.googleapis.com/customsearch/v1?key={API_KEY}&cx={CX}&q={query}&filter=1&safe=active&searchType=image&imgSize=medium&rights=cc_publicdomain";
 
         StartCoroutine(ExtractWikipediaText(wikipediaUrl));
 
@@ -54,9 +54,6 @@ internal sealed class ImageQuery : MonoBehaviour
         if (www.isHttpError || www.isNetworkError)
         {
             Debug.LogError($"Error while receiving: {www.error}");
-
-            if (string.IsNullOrEmpty(API_KEY) || string.IsNullOrEmpty(CX))
-                Debug.Log("Insert API_KEY and API_CREDENTIALS. See README.md for details.");
         }
         else
         {
