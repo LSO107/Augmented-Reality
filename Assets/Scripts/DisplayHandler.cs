@@ -18,8 +18,6 @@ internal sealed class DisplayHandler : MonoBehaviour
     [SerializeField]
     private Slider loadingBar;
 
-    private int m_CurrentRow;
-    private int m_CurrentColumn;
     private float m_TotalDownloadProgress;
 
     private const int NumberOfImages = 10;
@@ -30,37 +28,35 @@ internal sealed class DisplayHandler : MonoBehaviour
     /// </summary>
     public void SetImages(List<byte[]> images, IEnumerable<string> imageContextLinks)
     {
+        var column = 0;
+        var row = 0;
+
         for (var i = 0; i < images.Count; i++)
         {
             var texture = new Texture2D(1, 1);
             texture.LoadImage(images[i]);
 
-            if (m_CurrentColumn % picturesPerRow == 0)
+            if (column % picturesPerRow == 0)
             {
-                m_CurrentColumn = 0;
-                m_CurrentRow++;
+                column = 0;
+                row++;
             }
 
-            var pos = GetSpawnPosition();
+            var pos = CalculateImageGridPosition(column, row);
 
-            var img = Instantiate(imagePrefab, new Vector3(pos.x, pos.y + 10, pos.z), Quaternion.identity, transform);
-            //img.transform.LookAt(Camera.main.transform.position);
-            //img.transform.Rotate(Vector3.up, 180);
+            var img = Instantiate(imagePrefab, pos, Quaternion.identity, transform);
 
             img.GetComponent<Renderer>().material.mainTexture = texture;
             img.GetComponent<TouchControl>().StoreContextLinks(imageContextLinks.ToList()[i]);
-            m_CurrentColumn++;
+            column++;
         }
     }
 
     /// <summary>
     /// Gets the location to spawn relative to the camera
     /// </summary>
-    private Vector3 GetSpawnPosition()
+    private Vector3 CalculateImageGridPosition(int column, int row)
     {
-        if (Camera.main == null)
-            throw new NullReferenceException("Camera is null.");
-
         var cam = Camera.main.transform;
         var center = cam.position;
         var camRight = cam.right;
@@ -68,11 +64,23 @@ internal sealed class DisplayHandler : MonoBehaviour
 
         var start = center + camForward - Vector3.Scale(camRight, new Vector3(0.3f, 0, 0.3f));
 
-        var x = start.x + (imageOffset * camRight.x) * m_CurrentColumn;
-        var y = start.y + imageOffset * m_CurrentRow;
-        var z = start.z + (imageOffset * camRight.z) * m_CurrentColumn;
+        var x = start.x + (imageOffset * camRight.x) * column;
+        var y = start.y + imageOffset * row + 10;
+        var z = start.z + (imageOffset * camRight.z) * column;
 
         return new Vector3(x, y, z);
+    }
+
+    private Vector3 CalculateWikiTextPosition()
+    {
+        var cam = Camera.main.transform;
+        var center = cam.position;
+        var camRight = cam.right;
+        var camForward = cam.forward;
+
+        var start = center + camForward;
+
+        return start;
     }
 
     /// <summary>
@@ -90,8 +98,7 @@ internal sealed class DisplayHandler : MonoBehaviour
     /// </summary>
     public void SetWikipediaText(string text)
     {
-        var pos = GetSpawnPosition();
-        var wiki = Instantiate(wikipediaPrefab, new Vector3(0, 0, pos.z), Quaternion.identity, transform);
+        var wiki = Instantiate(wikipediaPrefab, CalculateWikiTextPosition(), Quaternion.identity, transform);
         wiki.GetComponentInChildren<Text>().text = text;
         wiki.transform.LookAt(Camera.main.transform.position);
         wiki.transform.Rotate(Vector3.up, 180);
@@ -112,7 +119,5 @@ internal sealed class DisplayHandler : MonoBehaviour
 
         m_TotalDownloadProgress = 0;
         loadingBar.value = 0;
-        m_CurrentColumn = 0;
-        m_CurrentRow = 0;
     }
 }
