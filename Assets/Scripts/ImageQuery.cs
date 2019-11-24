@@ -29,14 +29,14 @@ internal sealed class ImageQuery : MonoBehaviour
 
     public void GetPictures()
     {
-        StartCoroutine(DownloadImage());
+        StartCoroutine(HandleGetRequests());
     }
 
     /// <summary>
-    /// Sends a GET request to Google Custom Search API
-    /// and downloads the queried image and Wikipedia text
+    /// Sends a GET request to APIs
+    /// then stores image byte arrays and Wikipedia text
     /// </summary>
-    private IEnumerator DownloadImage()
+    private IEnumerator HandleGetRequests()
     {
         ToggleSelectable(searchInputField, searchButton);
 
@@ -93,7 +93,7 @@ internal sealed class ImageQuery : MonoBehaviour
     }
 
     /// <summary>
-    /// Makes a request to Wikipedia API then sets response to <see cref="m_WikipediaText"/>
+    /// Makes a request to the Wikipedia API then sets <see cref="m_WikipediaText"/> to the response
     /// </summary>
     private IEnumerator ExtractWikipediaText(string wikipediaUrl)
     {

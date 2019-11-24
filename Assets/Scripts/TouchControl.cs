@@ -2,36 +2,35 @@
 
 internal sealed class TouchControl : MonoBehaviour
 {
-    private Camera MainCamera;
+    private Camera m_MainCamera;
 
-    private Vector3 screenPoint;
-    private Vector3 offset;
+    private Vector3 m_ScreenPoint;
+    private Vector3 m_Offset;
 
-    private bool resetTouch;
-
-    private string contextLink;
+    private bool m_ResetTouch;
+    private string m_ContextLink;
 
     private void Awake()
     {
-        MainCamera = Camera.main;
+        m_MainCamera = Camera.main;
     }
 
     private void Update()
     {
         if (Input.touchCount == 0)
         {
-            resetTouch = true;
+            m_ResetTouch = true;
         }
     }
 
     public void StoreContextLinks(string link)
     {
-        contextLink = link;
+        m_ContextLink = link;
     }
 
     private void PinchScale()
     {
-        resetTouch = false;
+        m_ResetTouch = false;
 
         var touchZero = Input.GetTouch(0);
         var touchOne = Input.GetTouch(1);
@@ -50,8 +49,8 @@ internal sealed class TouchControl : MonoBehaviour
 
     private void DoubleTap()
     {
-        Application.OpenURL(contextLink);
-        Debug.Log(contextLink);
+        Application.OpenURL(m_ContextLink);
+        Debug.Log(m_ContextLink);
     }
 
     private void OnMouseDown()
@@ -63,10 +62,10 @@ internal sealed class TouchControl : MonoBehaviour
         }
 
         var position = transform.position;
-        screenPoint = MainCamera.WorldToScreenPoint(position);
+        m_ScreenPoint = m_MainCamera.WorldToScreenPoint(position);
 
-        var mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
-        offset = position - MainCamera.ScreenToWorldPoint(mousePosition);
+        var mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, m_ScreenPoint.z);
+        m_Offset = position - m_MainCamera.ScreenToWorldPoint(mousePosition);
     }
 
     private void OnMouseDrag()
@@ -76,14 +75,14 @@ internal sealed class TouchControl : MonoBehaviour
             PinchScale();
         }
 
-        if (!resetTouch)
+        if (!m_ResetTouch)
             return;
 
-        var cursorPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenPoint.z);
-        var cursorPosition = MainCamera.ScreenToWorldPoint(cursorPoint) + offset;
+        var cursorPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, m_ScreenPoint.z);
+        var cursorPosition = m_MainCamera.ScreenToWorldPoint(cursorPoint) + m_Offset;
         transform.position = cursorPosition;
 
-        transform.LookAt(MainCamera.transform);
+        transform.LookAt(m_MainCamera.transform);
         transform.Rotate(0, 180, 0);
     }
 }
