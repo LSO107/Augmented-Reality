@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -17,13 +18,11 @@ internal sealed class DisplayHandler : MonoBehaviour
     [SerializeField]
     private Slider loadingBar;
 
-    private GameObject m_WikipediaText;
+    private int m_CurrentRow;
+    private int m_CurrentColumn;
     private float m_TotalDownloadProgress;
 
     private const int NumberOfImages = 10;
-
-    private int m_CurrentRow;
-    private int m_CurrentColumn;
 
     /// <summary>
     /// Instantiates image prefabs, sets positions and rotation relative to camera.
@@ -44,9 +43,9 @@ internal sealed class DisplayHandler : MonoBehaviour
 
             var pos = GetSpawnPosition();
 
-            var img = Instantiate(imagePrefab, pos, Quaternion.identity, transform);
-            img.transform.LookAt(Camera.main.transform.position);
-            img.transform.Rotate(Vector3.up, 180);
+            var img = Instantiate(imagePrefab, new Vector3(pos.x, pos.y + 10, pos.z), Quaternion.identity, transform);
+            //img.transform.LookAt(Camera.main.transform.position);
+            //img.transform.Rotate(Vector3.up, 180);
 
             img.GetComponent<Renderer>().material.mainTexture = texture;
             img.GetComponent<TouchControl>().StoreContextLinks(imageContextLinks.ToList()[i]);
@@ -59,10 +58,13 @@ internal sealed class DisplayHandler : MonoBehaviour
     /// </summary>
     private Vector3 GetSpawnPosition()
     {
-        var cam = Camera.main;
-        var center = cam.transform.position;
-        var camRight = cam.transform.right;
-        var camForward = cam.transform.forward;
+        if (Camera.main == null)
+            throw new NullReferenceException("Camera is null.");
+
+        var cam = Camera.main.transform;
+        var center = cam.position;
+        var camRight = cam.right;
+        var camForward = cam.forward;
 
         var start = center + camForward - Vector3.Scale(camRight, new Vector3(0.3f, 0, 0.3f));
 
@@ -84,13 +86,15 @@ internal sealed class DisplayHandler : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets <see cref="Text.text"/> value to string
+    /// Instantiate wikipedia text prefab and set the <see cref="Text"/> component
     /// </summary>
     public void SetWikipediaText(string text)
     {
         var pos = GetSpawnPosition();
-        m_WikipediaText = Instantiate(wikipediaPrefab, new Vector3(0, 0, pos.z), Quaternion.identity, transform);
-        m_WikipediaText.GetComponentInChildren<Text>().text = text;
+        var wiki = Instantiate(wikipediaPrefab, new Vector3(0, 0, pos.z), Quaternion.identity, transform);
+        wiki.GetComponentInChildren<Text>().text = text;
+        wiki.transform.LookAt(Camera.main.transform.position);
+        wiki.transform.Rotate(Vector3.up, 180);
     }
 
     /// <summary>
