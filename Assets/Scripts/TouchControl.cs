@@ -10,6 +10,8 @@ internal sealed class TouchControl : MonoBehaviour
     private bool m_ResetTouch;
     private string m_ContextLink;
 
+    private TouchStates m_CurrentState;
+
     private void Awake()
     {
         m_MainCamera = Camera.main;

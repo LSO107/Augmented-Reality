@@ -14,7 +14,7 @@ internal sealed class ImageQuery : MonoBehaviour
     [SerializeField]
     private Text inputFieldText;
     [SerializeField]
-    private DisplayHandler displayHandler;
+    private HandleDisplay handleDisplay;
     [SerializeField]
     private InputField searchInputField;
     [SerializeField]
@@ -78,12 +78,12 @@ internal sealed class ImageQuery : MonoBehaviour
                 yield return request.SendWebRequest();
 
                 downloadedImages.Add(request.downloadHandler.data);
-                displayHandler.UpdateLoadingBar(request);
+                handleDisplay.UpdateLoadingBar(request);
             }
 
-            displayHandler.DeleteSearchResults();
-            displayHandler.SetImages(downloadedImages, imageContextLinks);
-            displayHandler.SetWikipediaText(m_WikipediaText);
+            handleDisplay.DeleteSearchResults();
+            handleDisplay.SetImages(downloadedImages, imageContextLinks);
+            handleDisplay.SetWikipediaText(m_WikipediaText);
             downloadedImages.Clear();
             ToggleSelectable(searchInputField, searchButton);
         }

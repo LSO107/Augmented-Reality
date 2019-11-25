@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-internal sealed class DisplayHandler : MonoBehaviour
+internal sealed class HandleDisplay : MonoBehaviour
 {
     [SerializeField]
     private GameObject imagePrefab;
