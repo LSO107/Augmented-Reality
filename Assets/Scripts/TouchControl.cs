@@ -12,9 +12,12 @@ internal sealed class TouchControl : MonoBehaviour
 
     private TouchStates m_CurrentState;
 
+    private ImageLibrary m_ImageLibrary;
+
     private void Awake()
     {
         m_MainCamera = Camera.main;
+        m_ImageLibrary = FindObjectOfType<ImageLibrary>();
     }
 
     private void Update()
@@ -51,7 +54,8 @@ internal sealed class TouchControl : MonoBehaviour
 
     private void DoubleTap()
     {
-        Application.OpenURL(m_ContextLink);
+        m_ImageLibrary.StoreImage(gameObject);
+        //Application.OpenURL(m_ContextLink);
         Debug.Log(m_ContextLink);
     }
 
