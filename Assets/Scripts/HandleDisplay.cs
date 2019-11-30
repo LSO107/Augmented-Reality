@@ -22,6 +22,9 @@ internal sealed class HandleDisplay : MonoBehaviour
 
     private const int NumberOfImages = 10;
 
+    private List<GameObject> m_InstantiatedImages = new List<GameObject>();
+    private GameObject m_InstantiatedWiki;
+
     /// <summary>
     /// Instantiates image prefabs, sets positions and rotation relative to camera.
     /// Sets the texture from the byte array
@@ -44,6 +47,7 @@ internal sealed class HandleDisplay : MonoBehaviour
 
             var pos = CalculateImageGridPosition(column, row);
             var img = Instantiate(imagePrefab, pos, Quaternion.identity, transform);
+            m_InstantiatedImages.Add(img);
             StartCoroutine(ScaleImageOverTime(img));
 
             img.transform.LookAt(Camera.main.transform.position);
@@ -118,10 +122,10 @@ internal sealed class HandleDisplay : MonoBehaviour
     /// </summary>
     public void SetWikipediaText(string text)
     {
-        var wiki = Instantiate(wikipediaPrefab, CalculateWikiTextPosition(), Quaternion.identity, transform);
-        wiki.GetComponentInChildren<Text>().text = text;
-        wiki.transform.LookAt(Camera.main.transform.position);
-        wiki.transform.Rotate(Vector3.up, 180);
+        m_InstantiatedWiki = Instantiate(wikipediaPrefab, CalculateWikiTextPosition(), Quaternion.identity, transform);
+        m_InstantiatedWiki.GetComponentInChildren<Text>().text = text;
+        m_InstantiatedWiki.transform.LookAt(Camera.main.transform.position);
+        m_InstantiatedWiki.transform.Rotate(Vector3.up, 180);
     }
 
     /// <summary>
@@ -129,15 +133,19 @@ internal sealed class HandleDisplay : MonoBehaviour
     /// </summary>
     public void DeleteSearchResults()
     {
-        if (transform.childCount > 0)
+        foreach (var image in m_InstantiatedImages)
         {
-            foreach (Transform child in transform)
-            {
-                Destroy(child.gameObject);
-            }
+            Destroy(image);
         }
+        
+        Destroy(m_InstantiatedWiki);
 
         m_TotalDownloadProgress = 0;
         loadingBar.value = 0;
+    }
+
+    public void RemoveImageFromCollection(GameObject image)
+    {
+        m_InstantiatedImages.Remove(image);
     }
 }
