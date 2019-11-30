@@ -5,7 +5,7 @@ using UnityEngine;
 internal sealed class ImageLibrary : MonoBehaviour
 {
     [SerializeField] private List<GameObject> storedImages = new List<GameObject>();
-    [SerializeField] private GameObject content;
+    [SerializeField] private GameObject libraryInterface;
 
     private CanvasGroup m_CanvasGroup;
 
@@ -14,16 +14,22 @@ internal sealed class ImageLibrary : MonoBehaviour
         m_CanvasGroup = GetComponentInChildren<CanvasGroup>();
     }
 
+    /// <summary>
+    /// Adds the image to a list for stored images,
+    /// then removes it from the list of temporary images
+    /// </summary>
     public void StoreImage(GameObject image)
     {
         if (storedImages.Contains(image))
             return;
 
         storedImages.Add(image);
-        image.transform.SetParent(content.transform);
-        RelocateImagePosition(image);
+        GetComponent<HandleDisplay>().RemoveImageFromCollection(image);
     }
 
+    /// <summary>
+    /// Removes gameObject from the collection, then destroys it
+    /// </summary>
     public void RemoveImage(GameObject image)
     {
         if (storedImages.Contains(image))
@@ -41,52 +47,44 @@ internal sealed class ImageLibrary : MonoBehaviour
         Destroy(image);
     }
 
-    private void RelocateImagePosition(GameObject image)
-    {
-        // Move image position to image library
-        // TODO: Find a starting position
-        // TODO: Find the X axis of the last element, then add to the X axis
-        image.transform.position = content.transform.position += new Vector3(-0.5f, 0, 0);
-
-        // Reset the rotation to none (Quaternion identity)
-        // TODO: Figure out why resetting the rotation is not working
-        image.transform.rotation = Quaternion.identity;
-    }
-
+    /// <summary>
+    /// Toggle <see cref="CanvasGroup"/> settings and calls <see cref="LockLibraryPosition"/>
+    /// </summary>
     public void ToggleCanvasGroup()
     {
         m_CanvasGroup.alpha = m_CanvasGroup.alpha == 1 ? 0 : 1;
         m_CanvasGroup.interactable = m_CanvasGroup.interactable != true;
         m_CanvasGroup.blocksRaycasts = m_CanvasGroup.blocksRaycasts != true;
 
-        if (storedImages.Count == 1)
+        if (GetComponentInChildren<Canvas>().enabled == false)
         {
             GetComponentInChildren<Canvas>().enabled = true;
         }
-        else
-        {
-            Debug.Log("Library is empty!");
-        }
 
-        /*if (m_CanvasGroup.interactable)
-        {
-            StartCoroutine(LockLibraryPosition());
-        }
-        else
-        {
-            StopCoroutine(LockLibraryPosition());
-        }*/
+        StartCoroutine(LockLibraryPosition());
     }
 
+    /// <summary>
+    /// While <see cref="m_CanvasGroup"/> is active, lock position of <see cref="libraryInterface"/>
+    /// </summary>
     private IEnumerator LockLibraryPosition()
     {
         while (m_CanvasGroup.interactable)
         {
-            // While image library is open
-
-            // Lock position to top of the screen
-
+            //libraryInterface.transform.position = GetLibraryPosition();
+            libraryInterface.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
+            libraryInterface.transform.rotation = Camera.main.transform.rotation;
             yield return null;
         }
+    }
+
+    /// <summary>
+    /// Returns the position for the library
+    /// </summary>
+    private static Vector3 GetLibraryPosition()
+    {
+        var cam = Camera.main.transform;
+        var start = cam.position + new Vector3(0, 0.04f, 0);
+        return start + cam.forward * 0.1f;
     }
 }
