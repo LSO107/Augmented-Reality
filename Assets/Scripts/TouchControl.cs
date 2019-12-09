@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts;
+using UnityEngine;
 
 internal sealed class TouchControl : MonoBehaviour
 {
@@ -25,6 +26,12 @@ internal sealed class TouchControl : MonoBehaviour
         if (Input.touchCount == 0)
         {
             m_ResetTouch = true;
+            return;
+        }
+
+        if (Input.GetTouch(0).deltaTime > 2)
+        {
+            Debug.Log("Long Pressed for more than two seconds.");
         }
     }
 
@@ -40,7 +47,22 @@ internal sealed class TouchControl : MonoBehaviour
         var touchZero = Input.GetTouch(0);
         var touchOne = Input.GetTouch(1);
 
-        var touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+        var firstTouchPosition = Camera.main.ScreenToWorldPoint(Input.touches[0].position);
+        var secondTouchPosition = Camera.main.ScreenToWorldPoint(Input.touches[1].position);
+
+        var firstRay = Camera.main.ScreenPointToRay(firstTouchPosition);
+        var secondRay = Camera.main.ScreenPointToRay(secondTouchPosition);
+
+        Physics.Raycast(firstRay, out var hit1);
+        Physics.Raycast(firstRay, out var hit2);
+
+        if (hit1.collider == hit2.collider)
+        {
+            var distance = Vector3.Distance(hit1.point, hit2.point);
+            gameObject.transform.localScale = new Vector3(distance, distance, 1);
+        }
+        
+        /*var touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
         var touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
 
         var prevMagnitude = (touchZeroPrevPos - touchOnePrevPos).magnitude;
@@ -49,7 +71,7 @@ internal sealed class TouchControl : MonoBehaviour
         var difference = Mathf.Clamp(currentMagnitude - prevMagnitude, 0.075F, 1);
 
         var newScale = new Vector3(difference, difference, 1);
-        gameObject.transform.localScale = Vector3.Lerp(transform.localScale, newScale, 3.5F * Time.deltaTime);
+        gameObject.transform.localScale = Vector3.Lerp(transform.localScale, newScale, 3.5F * Time.deltaTime);*/
     }
 
     private void DoubleTap()
@@ -61,7 +83,7 @@ internal sealed class TouchControl : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (Input.GetTouch(0).tapCount == 2)
+        if (InputWrapper.HasDoubleTapped())
         {
             DoubleTap();
             Debug.Log("JUST DOUBLE TAPPED !!");
