@@ -88,7 +88,7 @@ internal sealed class TouchControl : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (Input.GetTouch(0).tapCount == 2)
+        if (InputWrapper.HasDoubleTapped())
         {
             DoubleTap();
         }
@@ -114,7 +114,7 @@ internal sealed class TouchControl : MonoBehaviour
                 break;
         }
 
-        if (Input.touchCount == 2)
+        if (InputWrapper.IsPinching())
         {
             PinchScale();
         }
