@@ -34,12 +34,12 @@ internal sealed class ImageLibrary : MonoBehaviour
     {
         if (storedImages.Contains(image))
         {
-            var index = storedImages.IndexOf(image);
+            /*var index = storedImages.IndexOf(image);
 
             for (var i = index + 1; i < storedImages.Count; i++)
             {
                 storedImages[i].transform.position += new Vector3(-0.2f, 0, 0);
-            }
+            }*/
 
             storedImages.Remove(image);
         }
@@ -71,8 +71,8 @@ internal sealed class ImageLibrary : MonoBehaviour
     {
         while (m_CanvasGroup.interactable)
         {
-            //libraryInterface.transform.position = GetLibraryPosition();
-            libraryInterface.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
+            libraryInterface.transform.position = GetLibraryPosition();
+            //libraryInterface.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
             libraryInterface.transform.rotation = Camera.main.transform.rotation;
             yield return null;
         }
