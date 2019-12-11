@@ -1,17 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 internal sealed class ImageLibrary : MonoBehaviour
 {
     [SerializeField] private List<GameObject> storedImages = new List<GameObject>();
-    [SerializeField] private GameObject libraryInterface;
+
+    [SerializeField] private UpdateLibrary updateLibrary;
 
     private CanvasGroup m_CanvasGroup;
 
     private void Start()
     {
-        m_CanvasGroup = GetComponentInChildren<CanvasGroup>();
+        m_CanvasGroup = updateLibrary.GetComponent<CanvasGroup>();
     }
 
     /// <summary>
@@ -25,6 +25,8 @@ internal sealed class ImageLibrary : MonoBehaviour
 
         storedImages.Add(image);
         GetComponent<HandleDisplay>().RemoveImageFromCollection(image);
+        //updateLibrary.UpdateLibrary(image);
+        updateLibrary.AddImage(image);
     }
 
     /// <summary>
@@ -34,13 +36,6 @@ internal sealed class ImageLibrary : MonoBehaviour
     {
         if (storedImages.Contains(image))
         {
-            /*var index = storedImages.IndexOf(image);
-
-            for (var i = index + 1; i < storedImages.Count; i++)
-            {
-                storedImages[i].transform.position += new Vector3(-0.2f, 0, 0);
-            }*/
-
             storedImages.Remove(image);
         }
 
@@ -48,43 +43,11 @@ internal sealed class ImageLibrary : MonoBehaviour
     }
 
     /// <summary>
-    /// Toggle <see cref="CanvasGroup"/> settings and calls <see cref="LockLibraryPosition"/>
+    /// Toggle image library user interface
     /// </summary>
-    public void ToggleCanvasGroup()
+    public void ToggleImageLibrary()
     {
-        m_CanvasGroup.alpha = m_CanvasGroup.alpha == 1 ? 0 : 1;
-        m_CanvasGroup.interactable = m_CanvasGroup.interactable != true;
-        m_CanvasGroup.blocksRaycasts = m_CanvasGroup.blocksRaycasts != true;
-
-        if (GetComponentInChildren<Canvas>().enabled == false)
-        {
-            GetComponentInChildren<Canvas>().enabled = true;
-        }
-
-        StartCoroutine(LockLibraryPosition());
-    }
-
-    /// <summary>
-    /// While <see cref="m_CanvasGroup"/> is active, lock position of <see cref="libraryInterface"/>
-    /// </summary>
-    private IEnumerator LockLibraryPosition()
-    {
-        while (m_CanvasGroup.interactable)
-        {
-            libraryInterface.transform.position = GetLibraryPosition();
-            //libraryInterface.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 0));
-            libraryInterface.transform.rotation = Camera.main.transform.rotation;
-            yield return null;
-        }
-    }
-
-    /// <summary>
-    /// Returns the position for the library
-    /// </summary>
-    private static Vector3 GetLibraryPosition()
-    {
-        var cam = Camera.main.transform;
-        var start = cam.position + new Vector3(0, 0.04f, 0);
-        return start + cam.forward * 0.1f;
+        var show = !m_CanvasGroup.interactable;
+        UserInterfaceUtils.ToggleCanvasGroup(m_CanvasGroup, show);
     }
 }
