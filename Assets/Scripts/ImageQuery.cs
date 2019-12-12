@@ -69,6 +69,7 @@ internal sealed class ImageQuery : MonoBehaviour
             catch (JsonSerializationException e)
             {
                 ToggleSelectable(searchInputField, searchButton);
+                Notification.Instance.SetNotification(false, "No results found");
                 throw new JsonSerializationException("Word must be entered");
             }
 
@@ -100,6 +101,7 @@ internal sealed class ImageQuery : MonoBehaviour
         if (wikiRequest.isHttpError || wikiRequest.isNetworkError)
         {
             Debug.Log($"Error while receiving {wikiRequest.error}");
+            Notification.Instance.SetNotification(false, "Network error.");
         }
         else
         {
