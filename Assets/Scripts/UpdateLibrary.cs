@@ -20,5 +20,6 @@ public class UpdateLibrary : MonoBehaviour
         var image = images.First(i => i.texture == null);
         image.texture = img.GetComponent<Renderer>().material.mainTexture;
         UserInterfaceUtils.ToggleCanvasGroup(image.GetComponent<CanvasGroup>(), true);
+        Notification.Instance.SetNotification(true, "Image added to library");
     }
 }

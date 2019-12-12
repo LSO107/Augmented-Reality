@@ -18,6 +18,7 @@ public class StoredImage : MonoBehaviour, IPointerClickHandler
 
         UserInterfaceUtils.ToggleCanvasGroup(GetComponentInParent<CanvasGroup>(), false);
         UserInterfaceUtils.ToggleCanvasGroup(m_CanvasGroup, false);
+        Notification.Instance.SetNotification(false, "Image deleted");
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -27,9 +28,24 @@ public class StoredImage : MonoBehaviour, IPointerClickHandler
 
     public void CreateImage()
     {
-        var image = Instantiate(imagePrefab, Camera.main.transform.position + Vector3.forward, Quaternion.identity);
+        var image = Instantiate(imagePrefab, GetImagePosition(), Quaternion.identity);
+        image.transform.LookAt(Camera.main.transform.position);
+        image.transform.Rotate(Vector3.up, 180);
+
         imagePrefab.GetComponent<Renderer>().sharedMaterial.mainTexture = GetComponent<RawImage>().texture;
         StartCoroutine(ScaleImageOverTime(image));
+        Notification.Instance.SetNotification(true, "Image was created");
+    }
+
+    private static Vector3 GetImagePosition()
+    {
+        var cam = Camera.main.transform;
+        var center = cam.position;
+        var camForward = cam.forward;
+
+        var start = center + camForward;
+
+        return start;
     }
 
     /// <summary>

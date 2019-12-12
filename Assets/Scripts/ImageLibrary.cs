@@ -4,7 +4,6 @@ using UnityEngine;
 internal sealed class ImageLibrary : MonoBehaviour
 {
     [SerializeField] private List<GameObject> storedImages = new List<GameObject>();
-
     [SerializeField] private UpdateLibrary updateLibrary;
 
     private CanvasGroup m_CanvasGroup;
@@ -21,11 +20,13 @@ internal sealed class ImageLibrary : MonoBehaviour
     public void StoreImage(GameObject image)
     {
         if (storedImages.Contains(image))
+        {
+            Notification.Instance.SetNotification(false, "Image exists in library");
             return;
+        }
 
         storedImages.Add(image);
         GetComponent<HandleDisplay>().RemoveImageFromCollection(image);
-        //updateLibrary.UpdateLibrary(image);
         updateLibrary.AddImage(image);
     }
 
@@ -39,6 +40,7 @@ internal sealed class ImageLibrary : MonoBehaviour
             storedImages.Remove(image);
         }
 
+        Notification.Instance.SetNotification(false, "Image deleted");
         Destroy(image);
     }
 
