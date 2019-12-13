@@ -31,8 +31,8 @@ public class StoredImage : MonoBehaviour, IPointerClickHandler
         var image = Instantiate(imagePrefab, GetImagePosition(), Quaternion.identity);
         image.transform.LookAt(Camera.main.transform.position);
         image.transform.Rotate(Vector3.up, 180);
+        image.GetComponent<Renderer>().material.mainTexture = GetComponent<RawImage>().texture;
 
-        imagePrefab.GetComponent<Renderer>().sharedMaterial.mainTexture = GetComponent<RawImage>().texture;
         StartCoroutine(ScaleImageOverTime(image));
         Notification.Instance.SetNotification(true, "Image was created");
     }
