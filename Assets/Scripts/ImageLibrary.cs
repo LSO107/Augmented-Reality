@@ -21,7 +21,7 @@ internal sealed class ImageLibrary : MonoBehaviour
     {
         if (storedImages.Contains(image))
         {
-            Notification.Instance.SetNotification(false, "Image exists in library");
+            Notification.Instance.SetNotification(false, "Image already saved");
             return;
         }
 

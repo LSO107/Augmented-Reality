@@ -1,12 +1,15 @@
 ﻿using System.Collections;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Notification : MonoBehaviour
 {
     public static Notification Instance { get; private set; }
 
-    [SerializeField] private Text text;
+    [SerializeField] private GameObject notification;
+
+    private CanvasGroup m_CanvasGroup;
+    private TextMeshProUGUI m_Text;
 
     public void Awake()
     {
@@ -17,6 +20,12 @@ public class Notification : MonoBehaviour
             Instance = this;
     }
 
+    private void Start()
+    {
+        m_Text = notification.GetComponentInChildren<TextMeshProUGUI>();
+        m_CanvasGroup = notification.GetComponent<CanvasGroup>();
+    }
+
     public void SetNotification(bool success, string message)
     {
         StartCoroutine(success ? SuccessNotification(message) : ErrorNotification(message));
@@ -24,17 +33,19 @@ public class Notification : MonoBehaviour
 
     private IEnumerator SuccessNotification(string message)
     {
-        text.text = message;
-        text.color = Color.green;
+        UserInterfaceUtils.ToggleCanvasGroup(m_CanvasGroup, true);
+        m_Text.text = message;
+        m_Text.color = Color.green;
         yield return new WaitForSeconds(1);
-        text.text = string.Empty;
+        UserInterfaceUtils.ToggleCanvasGroup(m_CanvasGroup, false);
     }
 
     private IEnumerator ErrorNotification(string message)
     {
-        text.text = message;
-        text.color = Color.red;
+        UserInterfaceUtils.ToggleCanvasGroup(m_CanvasGroup, true);
+        m_Text.text = message;
+        m_Text.color = Color.red;
         yield return new WaitForSeconds(1);
-        text.text = string.Empty;
+        UserInterfaceUtils.ToggleCanvasGroup(m_CanvasGroup, false);
     }
 }
