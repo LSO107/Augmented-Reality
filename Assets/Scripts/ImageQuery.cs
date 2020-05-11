@@ -24,8 +24,8 @@ internal sealed class ImageQuery : MonoBehaviour
 
     public List<byte[]> downloadedImages = new List<byte[]>();
 
-    private const string API_KEY = "AIzaSyA4ob3WDeH-lSCOnAHZSv5l4iaUV1m0a74";
-    private const string CX = "017045492535372880336:jde0kbzewsh";
+    private const string API_KEY = "ENTER API KEY";
+    private const string CX = "ENTER CX";
 
     public void GetPictures()
     {
